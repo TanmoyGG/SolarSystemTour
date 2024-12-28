@@ -81,3 +81,4 @@ libGLU.so
 # CPack generated files
 /CPackConfig.cmake
 /CPackSourceConfig.cmake
+/external/vcpkg/
