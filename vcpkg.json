@@ -1,0 +1,10 @@
+{
+  "name": "solar-system-tour",
+  "version": "1.0.0",
+  "dependencies": [
+    "opengl",
+    "freeglut",
+    "glew",
+    "glm"
+  ]
+}
