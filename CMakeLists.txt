@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(MarioMultiverseAdventures VERSION 1.0 LANGUAGES CXX)
+project(SolarSystemTour VERSION 1.0 LANGUAGES CXX)
 
 # Enable C++20
 set(CMAKE_CXX_STANDARD 20)
@@ -64,7 +64,7 @@ install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 
 # Packaging settings
 include(CPack)
-set(CPACK_PACKAGE_NAME "MarioMultiverseAdventures")
+set(CPACK_PACKAGE_NAME "SolarSystemTour")
 set(CPACK_PACKAGE_VERSION "1.0")
 set(CPACK_GENERATOR "ZIP;TGZ")
 set(CPACK_SOURCE_GENERATOR "ZIP;TGZ")
