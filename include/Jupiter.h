@@ -1,3 +1,5 @@
+#ifndef JUPITER_H
+#define JUPITER_H
 #ifdef _WIN32 // Check if compiling for Windows
 #include <windows.h> // Include windows.h for window management (only for Windows)
 #include <GL/glut.h>
@@ -7,21 +9,17 @@
 #else // Assume Linux or other platforms
 #include <GL/glut.h> // Include GLUT header for OpenGL (for Linux)
 #endif
-
-#include "ImageLoader.h"
-#include "../include/Jupiter.h"
+#include <cmath>
 
 
-//Main Function
-int main(int argc, char **argv) {
-    glutInit(&argc, argv); // Initialize GLUT
+void Filled_circle(float radius, float xc, float yc, float r, float g, float b);
 
-    glutInitWindowSize(4000, 2500); // Set the window's initial width & height
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-    glutCreateWindow("Jupiter");
-    glutDisplayFunc(display);
-    gluOrtho2D(0, 300, 0, 200); // for axis change
-    glutMainLoop();
+void rock1(float x_location, float y_location, float scale);
 
-    return 0;
-}
+void Building1(float x_location, float y_location, float scale);
+
+void display();
+
+void road();
+
+#endif //JUPITER_H

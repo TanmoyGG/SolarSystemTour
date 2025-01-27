@@ -27,10 +27,14 @@ file(GLOB_RECURSE SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 file(GLOB_RECURSE HEADERS ${CMAKE_SOURCE_DIR}/include/*.h)
 
 # Executable target
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS}
+        src/Jupiter.cpp
+        include/Jupiter.h
+        include/ImageLoader.h
+)
 
 # Link libraries
-target_link_libraries(${PROJECT_NAME} OpenGL::GL GLUT::GLUT GLU GLEW::GLEW glm::glm)
+target_link_libraries(${PROJECT_NAME} OpenGL::GL GLUT::GLUT OpenGL::GLU GLEW::GLEW glm::glm)
 
 # Platform-specific settings
 if(WIN32)
