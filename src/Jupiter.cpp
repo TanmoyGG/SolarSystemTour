@@ -8,50 +8,15 @@
 #include <cstdlib>
 #include <ctime>
 
-const float PI = 3.14159265359;
 
-//for starts
-const int numStars =400; // Number of stars
-float starPositions[numStars][2]; // Array to store star positions
-float starVelocities[numStars][2]; // Array to store star velocities
-
-//for mainRocket
-float rocketY = 55.0f; // Initial position
-bool isMovingUp = false;  // True if moving up
-bool isMovingDown = false; // True if moving down
-
-//for miniRocket
-float miniRocketY = 0.0f;
-bool miniRocketUp = false;
-bool miniRocketDown = false;
-
-//for sun
-float sunScale = 1.0f;
-bool sunScalingUp = true;
-
-//for redMoonLines
-float redMoonLinesOffset = 0.0f;
-const float redMoonWidth = 28.43f; // Adjust based on precise calculation if needed
-
-//for brownMoonLines
-float brownMoonLinesOffset = 0.0f;
-const float brownMoonWidth = 41.278502652287; // Calculated width based on x-radius
-
-//for car
-float carX = -58.52988f; // Start off-screen left
-float carSpeed = 1.0f;   // Adjust speed as needed
-
-//for satellite
-float satelliteX = 300.0f - 215.6f; // Initial position at the right edge
-const float satelliteRightmost = 245.64f; // Rightmost vertex's X coordinate
-
-
-struct RGB
-{
-    float r; ///< Red component (0.0 to 1.0)
-    float g; ///< Green component (0.0 to 1.0)
-    float b; ///< Blue component (0.0 to 1.0)
-};
+//funtion for text
+void renderText(float x, float y, void* font, const char* text) {
+    glRasterPos2f(x, y); // Set the position
+    while (*text) {
+        glutBitmapCharacter(font, *text); // Render each character
+        text++;
+    }
+}
 
 // Function to initialize star positions and velocities
 void initializeStars() {
@@ -90,6 +55,54 @@ void updateStars() {
     }
 }
 
+// Function to draw a circle (used for orbits and planets)
+void drawCircle(float x, float y, float radius) {
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < 360; ++i) {
+        float angle = i * PI / 180.0f;
+        glVertex2f(x + cos(angle) * radius, y + sin(angle) * radius);
+    }
+    glEnd();
+}
+
+void drawFilledCircle(float x, float y, float radius) {
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(x, y); // Center
+    for (int i = 0; i <= 360; ++i) {
+        float angle = i * PI / 180.0f;
+        glVertex2f(x + cos(angle) * radius, y + sin(angle) * radius);
+    }
+    glEnd();
+}
+
+
+void Scene0() {
+    // Draw stars
+    drawStars();
+
+    // Draw the Sun
+    glColor3f(1.0, 1.0, 0.0); // Yellow color
+    drawFilledCircle(150, 100, 5); // Adjusted position for new origin
+
+    // Draw orbits and planets
+    float orbitRadii[8] = {15, 25, 35, 45, 55, 65, 75, 85};
+    float planetSizes[8] = {2, 2.5, 3, 2.8, 3.5, 3, 2.5, 2};
+    glColor3f(0.5, 0.5, 0.5); // Gray color for orbits
+    for (int i = 0; i < 8; ++i) {
+        drawCircle(150, 100, orbitRadii[i]); // Adjusted position for new origin
+    }
+
+    // Draw planets
+    for (int i = 0; i < 8; ++i)
+    {
+        float x = 150 + orbitRadii[i] * cos(planetAngles[i]); // Adjusted for new origin
+        float y = 100 + orbitRadii[i] * sin(planetAngles[i]); // Adjusted for new origin
+        //
+        glColor3ub(50 + i * 20, 100 + i * 15, 200 - i * 10); // Unique colors for planets
+
+        drawFilledCircle(x, y, planetSizes[i]);
+    }
+}
 
 RGB HexToRGB(const std::string& hex)
 {
@@ -113,7 +126,7 @@ RGB HexToRGB(const std::string& hex)
 
 // Function to draw a circle with a specified color in hex format
 void drawCircleWithColorFromPoints(float cx, float cy, float px, float py, const std::string& hexColor,
-                                   int segments = 100)
+                                   int segments)
 {
     RGB rgb = HexToRGB(hexColor);
     float radius = sqrt((px - cx) * (px - cx) + (py - cy) * (py - cy));
@@ -132,7 +145,7 @@ void drawCircleWithColorFromPoints(float cx, float cy, float px, float py, const
 
 
 void drawCircleWithColorFromPointsBorder(float cx, float cy, float px, float py, const std::string& hexColor,
-                                   int segments = 100)
+                                   int segments)
 {
     RGB rgb = HexToRGB(hexColor);
     float radius = sqrt((px - cx) * (px - cx) + (py - cy) * (py - cy));
@@ -672,7 +685,8 @@ void brownMoonLines()
     glEnd();
 }
 
-void redMoon() {
+void redMoon()
+{
 
     glClear(GL_STENCIL_BUFFER_BIT);
     glEnable(GL_STENCIL_TEST);
@@ -1358,28 +1372,43 @@ void brokenSatellite(float x, float y)
 }
 
 // for keyboard inputs
-void handleKeyboard(unsigned char key, int x, int y) {
-    if (key == 'w' || key == 'W') {
-        if (!isMovingUp && !isMovingDown) { // Prevent restarting mid-movement
+void handleKeyboard(unsigned char key, int x, int y)
+{
+    if (key == 'w' || key == 'W')
+    {
+        if (!isMovingUp && !isMovingDown)
+        { // Prevent restarting mid-movement
             isMovingUp = true;
         }
     }
     if (key == 's' || key == 'S') {
-        if (!isMovingUp && !isMovingDown) { // Prevent restarting mid-movement
-            rocketY = 170.0f; // Start from off-screen
+        if (!isMovingUp && !isMovingDown)
+        { // Prevent restarting mid-movement
+            rocketY = 210.0f; // Start from off-screen
             isMovingDown = true;
         }
+    }
+    if (key == '0' || key == 'B')
+    {
+        currentScene = 0;
+    }
+    if (key == '1' || key == 'J' || key == 'j')
+    {
+        currentScene = 1;
     }
     glutPostRedisplay(); // Redraw scene
 }
 
 // for mouse clicks
-void mouseClick(int button, int state, int x, int y) {
+void mouseClick(int button, int state, int x, int y)
+{
     if (state == GLUT_DOWN) {
-        if (button == GLUT_LEFT_BUTTON) {
+        if (button == GLUT_LEFT_BUTTON)
+        {
             miniRocketUp = true;
             miniRocketDown = false;
-        } else if (button == GLUT_RIGHT_BUTTON) {
+        } else if (button == GLUT_RIGHT_BUTTON)
+        {
             miniRocketDown = true;
             miniRocketUp = false;
         }
@@ -1387,11 +1416,12 @@ void mouseClick(int button, int state, int x, int y) {
 }
 
 
-void update(int value) {
+void update(int value)
+{
     // Main rocket movement
     if (isMovingUp) {
         rocketY += 1.0f;
-        if (rocketY > 180.0f) {
+        if (rocketY > 210.0f) {
             isMovingUp = false;
         }
     }
@@ -1406,7 +1436,7 @@ void update(int value) {
     // Mini rocket movement
     if (miniRocketUp) {
         miniRocketY += 1.0f;
-        if (miniRocketY > 180.0f) {
+        if (miniRocketY > 210.0f) {
             miniRocketUp = false;
         }
     }
@@ -1455,6 +1485,14 @@ void update(int value) {
         satelliteX = 300.0f - 215.6f; // Reset to the right edge
     }
 
+    // Update planet angles to create rotation
+    for (int i = 0; i < 8; ++i) {
+        planetAngles[7 - i] += 0.01f * (i + 1); // Different speeds for each planet
+        if (planetAngles[i] > 2 * PI) {
+            planetAngles[i] -= 2 * PI;
+        }
+    }
+
     updateStars();
     glutPostRedisplay();
     glutTimerFunc(16, update, 0); // 60 FPS update
@@ -1465,71 +1503,94 @@ void update(int value) {
 void display()
 {
     glPointSize(5.0);
-    glClearColor(0.24313725490196078f, 0.25882352941176473f, 0.29411764705882354f, 1.0f);
+
     glClear(GL_COLOR_BUFFER_BIT); // Clear the color buffer (background)
-    // Draw stars in the background
-    drawStars();
 
-    satellite();
+    if (currentScene == 0)
+    {
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        renderText(10.0f, 170.0f, GLUT_BITMAP_HELVETICA_18, "Hello!!!");
+        renderText(10.0f, 165.0f, GLUT_BITMAP_HELVETICA_18, "Press '1' or 'J' to go to Jupiter");
+        Scene0();
 
-    brownMoon();
-    // Enable stencil test to clip lines to the brown moon's shape
-    glEnable(GL_STENCIL_TEST);
-    glStencilFunc(GL_EQUAL, 1, 0xFF);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-    // Draw two instances of brownMoonLines for seamless scrolling
-    glPushMatrix();
-    glTranslatef(brownMoonLinesOffset - brownMoonWidth, 0.0f, 0.0f);
-    brownMoonLines();
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(brownMoonLinesOffset, 0.0f, 0.0f);
-    brownMoonLines();
-    glPopMatrix();
-
-    glDisable(GL_STENCIL_TEST);
-
-    surface();
-
-    brokenSatellite(-190,-80);
-
-    mainRocket();
-
-    observatory();
-
-    car();
-
-    igloo();
-
-    redMoon();
-    // Enable stencil test to clip lines within the Red Moon's shape
-    glEnable(GL_STENCIL_TEST);
-    glStencilFunc(GL_EQUAL, 1, 0xFF);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-    // Draw lines twice for seamless scrolling
-    glPushMatrix();
-    glTranslatef(redMoonLinesOffset - redMoonWidth, 0.0f, 0.0f);
-    redMoonLines();
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(redMoonLinesOffset, 0.0f, 0.0f);
-    redMoonLines();
-    glPopMatrix();
-
-    glDisable(GL_STENCIL_TEST);
+    }
+    else if (currentScene ==1)
+    {
+        glClearColor(0.24313725490196078f, 0.25882352941176473f, 0.29411764705882354f, 1.0f);
 
 
-    miniRocket(0, miniRocketY);
 
-    miniRocket(90, miniRocketY - 3);
+        // Draw stars in the background
+        drawStars();
 
-    miniRocket(-100, miniRocketY - 4);
+        brownMoon();
+        // Enable stencil test to clip lines to the brown moon's shape
+        glEnable(GL_STENCIL_TEST);
+        glStencilFunc(GL_EQUAL, 1, 0xFF);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-    sun();
+        // Draw two instances of brownMoonLines for seamless scrolling
+        glPushMatrix();
+        glTranslatef(brownMoonLinesOffset - brownMoonWidth, 0.0f, 0.0f);
+        brownMoonLines();
+        glPopMatrix();
+
+        glPushMatrix();
+        glTranslatef(brownMoonLinesOffset, 0.0f, 0.0f);
+        brownMoonLines();
+        glPopMatrix();
+
+        glDisable(GL_STENCIL_TEST);
+
+        surface();
+
+        brokenSatellite(-190,-80);
+
+        mainRocket();
+
+        observatory();
+
+        car();
+
+        igloo();
+
+        redMoon();
+        // Enable stencil test to clip lines within the Red Moon's shape
+        glEnable(GL_STENCIL_TEST);
+        glStencilFunc(GL_EQUAL, 1, 0xFF);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+        // Draw lines twice for seamless scrolling
+        glPushMatrix();
+        glTranslatef(redMoonLinesOffset - redMoonWidth, 0.0f, 0.0f);
+        redMoonLines();
+        glPopMatrix();
+
+        glPushMatrix();
+        glTranslatef(redMoonLinesOffset, 0.0f, 0.0f);
+        redMoonLines();
+        glPopMatrix();
+
+        glDisable(GL_STENCIL_TEST);
+
+
+        miniRocket(0, miniRocketY);
+
+        miniRocket(90, miniRocketY - 3);
+
+        miniRocket(-100, miniRocketY - 4);
+
+        sun();
+
+        satellite();
+
+        glColor3ub(0,0,0);
+        renderText(120.0f, 25.0f, GLUT_BITMAP_HELVETICA_18, "Press '0' or 'B' to go back to the main menu");
+        renderText(120.0f, 20.0f, GLUT_BITMAP_HELVETICA_18, "Press 'W' to move the rocket up");
+        renderText(120.0f, 15.0f, GLUT_BITMAP_HELVETICA_18, "Press 'S' to move the rocket down");
+        renderText(120.0f, 10.0f, GLUT_BITMAP_HELVETICA_18, "Left click to move the mini rocket up");
+        renderText(120.0f, 5.0f, GLUT_BITMAP_HELVETICA_18, "Right click to move the mini rocket down");
+    }
 
 
     glutSwapBuffers(); // Swap the front and back frame buffers (double buffering)
