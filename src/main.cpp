@@ -20,8 +20,8 @@ void mouseClick(int i, int arg, int i1, int arg1);
 int main(int argc, char **argv) {
     glutInit(&argc, argv); // Initialize GLUT
 
-    glutInitWindowSize(4000, 2500); // Set the window's initial width & height
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(3000, 2000); // Set the window's initial width & height
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_STENCIL);
     glutCreateWindow("Jupiter");
     glutDisplayFunc(display);
     gluOrtho2D(0, 300, 0, 170); // for axis
