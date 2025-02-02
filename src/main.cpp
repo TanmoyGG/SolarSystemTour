@@ -12,6 +12,10 @@
 #include "../include/Jupiter.h"
 
 
+void initializeStars();
+void update(int i);
+void handleKeyboard(unsigned char c, int i, int arg);
+void mouseClick(int i, int arg, int i1, int arg1);
 //Main Function
 int main(int argc, char **argv) {
     glutInit(&argc, argv); // Initialize GLUT
@@ -20,7 +24,12 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutCreateWindow("Jupiter");
     glutDisplayFunc(display);
-    gluOrtho2D(0, 300, 0, 200); // for axis change
+    gluOrtho2D(0, 300, 0, 170); // for axis
+    srand(static_cast<unsigned>(time(0))); // Seed for random stars
+    initializeStars(); // Initialize star positions and velocities
+    glutMouseFunc(mouseClick);
+    glutKeyboardFunc(handleKeyboard);
+    glutTimerFunc(16, update, 0);
     glutMainLoop();
 
     return 0;

@@ -14,12 +14,8 @@
 
 void Filled_circle(float radius, float xc, float yc, float r, float g, float b);
 
-void rock1(float x_location, float y_location, float scale);
-
-void Building1(float x_location, float y_location, float scale);
-
 void display();
 
-void road();
+
 
 #endif //JUPITER_H
